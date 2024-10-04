@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Joe's Hotdog Stand</title>
+
+    <style type="text/css">
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+        }
+        .menu-item {
+            margin: 5px 0;
+        }
+        .summary {
+            margin-top: 20px;
+            text-align: center;
+        }
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Joe's Hotdog Stand</h1>
+
+    <div id="menu" class="menu"></div>
+
+    <button onclick="processOrder()">Place Order</button>
+
+    <p id="order-summary"></p>
+
+    <script>
+        const menuItems = {
+            "Hotdogs": 4.80,
+            "Fries": 3.95,
+            "Sodas": 1.99
+        };
+
+        const quantities = {
+            "Hotdogs": 0,
+            "Fries": 0,
+            "Sodas": 0
+        };
+
+        function showMoney(amount) {
+            amount = Math.round(amount * 100) / 100;
+            let amountString = amount.toString();
+            let nums = amountString.split('.');
+            if (nums.length === 1) {
+                return amountString + '.00';
+            }
+            if (nums[1].length === 1) {
+                return amountString + '0';
+            }
+            return amountString;
+        }
+
+        function displayMenu() {
+            let menu = "<h2>Menu</h2>";
+            for (let item in menuItems) {
+                menu += `<div class='menu-item'>${item}: $${showMoney(menuItems[item])}</div>`;
+            }
+            document.getElementById('menu').innerHTML = menu;
+        }
+
+        displayMenu();
+
+        function processOrder() {
+            let subtotal = 0;
+
+            for (let item in quantities) {
+                let quantity = parseInt(prompt(`How many ${item} would you like?`, 0));
+                quantities[item] = quantity;
+            }
+
+            for (let item in quantities) {
+                subtotal += quantities[item] * menuItems[item];
+            }
+
+            let discount = 0;
+            if (subtotal >= 25) {
+                discount = subtotal * 0.10;
+                subtotal -= discount;
+            }
+
+            const MEAL_TAX = 0.0625;
+            let tax = subtotal * MEAL_TAX;
+            let finalTotal = subtotal + tax;
+
+            let formattedSubtotal = showMoney(subtotal);
+            let formattedDiscount = showMoney(discount);
+            let formattedTax = showMoney(tax);
+            let formattedFinalTotal = showMoney(finalTotal);
+
+            let orderSummary = `
+                <div class='summary'>
+                <strong>Order Summary:</strong><br></br>
+            `;
+
+            for (let item in quantities) {
+                let itemTotal = showMoney(quantities[item] * menuItems[item]);
+                orderSummary += `${item}: ${quantities[item]} x $${showMoney(menuItems[item])} = $${itemTotal}<br></br>`;
+            }
+
+            orderSummary += `
+                Subtotal (before discount): $${showMoney(subtotal + discount)}<br></br> 
+                Discount: $${formattedDiscount}<br></br> 
+                Subtotal (after discount): $${formattedSubtotal}<br></br> 
+                Tax: $${formattedTax}<br></br> 
+                Final Total: $${formattedFinalTotal}
+            </div>`;
+
+            document.getElementById('order-summary').innerHTML = orderSummary;
+        }
+    </script>
+
+</body>
+</html>
